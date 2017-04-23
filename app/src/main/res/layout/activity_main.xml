@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.ljt.friendsrecord.ui.MainActivity">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_main"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        ></android.support.v4.view.ViewPager>
+<RadioGroup
+    android:id="@+id/rg"
+    android:orientation="horizontal"
+    android:background="@drawable/bottom_bg"
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+    <RadioButton
+        android:id="@+id/calllog"
+        android:button="@null"
+        android:drawableTop="@drawable/calllog_selector"
+        android:paddingTop="12dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+    <RadioButton
+        android:id="@+id/contact"
+        android:button="@null"
+        android:drawableTop="@drawable/contact_selector"
+        android:paddingTop="12dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+    <RadioButton
+        android:id="@+id/sms"
+        android:button="@null"
+        android:drawableTop="@drawable/sms_selector"
+        android:paddingTop="12dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+    <RadioButton
+        android:id="@+id/dialpad"
+        android:button="@null"
+        android:drawableTop="@drawable/dialpad_selector"
+        android:paddingTop="12dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+</RadioGroup>
+</LinearLayout>
