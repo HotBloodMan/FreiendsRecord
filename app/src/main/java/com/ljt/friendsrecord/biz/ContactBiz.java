@@ -35,9 +35,9 @@ public class ContactBiz {
     public void showDetail(Contact contact){
 
     }
-//    public List<MyCallLog> getAllCallLogs(){
-//        return ContactUtil.getAllCallLogs(mContext);
-//    }
+    public List<MyCallLog> getAllCallLogs(){
+        return ContactUtil.getAllCallLogs(mContext);
+    }
     public void removeCalllog(NBCallogAdapter adapter, MyCallLog mcl){
         DialogUtil.removeCalllog(mContext,adapter,mcl);
     }

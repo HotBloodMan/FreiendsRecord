@@ -5,7 +5,6 @@
               android:layout_height="60dp"
                 android:background="@drawable/header_bg"
     >
-
     <ImageView
         android:id="@+id/iv_header_left"
         android:layout_width="25dp"

@@ -7,8 +7,10 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.LruCache;
@@ -17,9 +19,12 @@ import com.ljt.friendsrecord.bean.Contact;
 import com.ljt.friendsrecord.bean.MyCallLog;
 import com.ljt.friendsrecord.ui.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -113,10 +118,91 @@ public class ContactUtil {
         });
     }
 
-    public static List<MyCallLog> getAllCallLogs(Contact contact) {
+    public static List<MyCallLog> getAllCallLogs(Context context) {
         ArrayList<MyCallLog> list = new ArrayList<>();
+        ContentResolver cr = context.getContentResolver();
+        String[] projection = {
+                CallLog.Calls._ID,
+                CallLog.Calls.NUMBER,
+                CallLog.Calls.TYPE,
+                CallLog.Calls.DATE,
+                "photo_id",
+                "name"
+        };
+        String sortOrder = CallLog.Calls.DATE + " desc";
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+        }
+        Cursor c = cr.query(CallLog.Calls.CONTENT_URI, projection, null, null, sortOrder);
+        while(c.moveToNext()){
+            MyCallLog mcl = new MyCallLog();
+            mcl.set_id(c.getInt(0));
+            mcl.setPhone(c.getString(1));
+            mcl.setType(c.getInt(2));
+            mcl.setDate(c.getLong(3));
 
+            mcl.setPhoto_id(getPhotoIdByNumber(context,mcl.getPhone()));
+
+            String name = c.getString(5);
+            if(TextUtils.isEmpty(name)){
+                name="未知号码";
+            }
+            mcl.setName(name);
+            //将date属性的值转换
+            String callLogTime=getCalllogTime(mcl.getDate());
+            mcl.setCallLogTime(callLogTime);
+            list.add(mcl);
+        }
+        c.close();
         return list;
+    }
+
+    public static String getCalllogTime(long stample){
+        String result="";
+        long now = System.currentTimeMillis();
+        long gap = now - stample;
+        if(gap<=24*60*60*1000){
+            result=new SimpleDateFormat("HH:mm").format(new Date(stample));
+        }else if(gap<=2*24*60*60*1000){
+            result = "昨天";
+        }else if(gap<=7*24*60*60*1000){
+            //拿星期几
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(stample);
+            int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
+            switch (weekDay) {
+                case 1:
+                    result = "星期日";
+                    break;
+                case 2:
+                    result = "星期一";
+                    break;
+                case 3:
+                    result = "星期二";
+                    break;
+                case 4:
+                    result = "星期三";
+                    break;
+                case 5:
+                    result = "星期四";
+                    break;
+                case 6:
+                    result = "星期五";
+                    break;
+                case 7:
+                    result = "星期六";
+                    break;
+            }
+        }else{
+            result = new SimpleDateFormat("yyyy-MM-dd").format(new Date(stample));
+        }
+        return  result;
     }
 
     public static void removeCalllog(Context context, MyCallLog mcl) {
@@ -137,6 +223,23 @@ public class ContactUtil {
         cr.delete(CallLog.Calls.CONTENT_URI,
                 where,
                 selectionArgs);
+    }
+
+    //根据给定的的电话来反查电话号码对应的联系人的photo_id
+
+    public static int getPhotoIdByNumber(Context context,String number){
+        int photo_id=0;
+        ContentResolver cr = context.getContentResolver();
+        //content://contacts/phonelookup/13513513500
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, number);
+
+        String[] projection = {ContactsContract.PhoneLookup.PHOTO_ID};
+        Cursor c = cr.query(uri, projection, null, null, null);
+        if(c.moveToNext()){
+           photo_id= c.getInt(0);
+        }
+        c.close();
+        return  photo_id;
     }
 
 }

@@ -2,6 +2,7 @@ package com.ljt.friendsrecord.fragment;
 
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,16 +19,21 @@ public class BaseFragment extends Fragment {
     public enum  POSITION{LEFT,RIGHT};
     LinearLayout headerView;
 
-
+    public static String TAG=BaseFragment.class.getSimpleName();
     public void setHeaderTitle(String title){
-        if(headerView==null){
+        Log.d(TAG,"cccc-->> setHeaderTitle ");
+        if(headerView!=null){
+            Log.d(TAG,"cccc-->> setHeaderTitle 1111");
+            TextView tv = (TextView) headerView.findViewById(R.id.tv_header_title);
+            if (!TextUtils.isEmpty(title)) {
+                Log.d(TAG, "cccc-->> setHeaderTitle title=" + title);
+                tv.setText(title);
+            } else {
+                Log.d(TAG, "cccc-->> setHeaderTitle title=null ");
+                tv.setText("你好CallLog");
+            }
+        }else {
             return;
-        }
-        TextView tv= (TextView) headerView.findViewById(R.id.tv_header_title);
-        if(!TextUtils.isEmpty(title)){
-            tv.setText(title);
-        }else{
-            tv.setText("TITLE");
         }
     }
     public void setHeaderImage(int resId,POSITION position){
